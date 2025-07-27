@@ -29,7 +29,7 @@ st.set_page_config(page_title="Tab Banner Predictor", layout="centered")
 st.title("📊 IrancellMan Tab Banner Click Predictor ")
 
 # Category input
-category_choice = st.selectbox("📂 Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
+category_choice = st.selectbox(" Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
 
 if category_choice == " Custom category":
     category_input = st.text_input("Enter your custom category:")
