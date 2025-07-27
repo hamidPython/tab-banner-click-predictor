@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+!pip install scikit-learn
 from sklearn.ensemble import GradientBoostingRegressor
 import pandas as pd
 
