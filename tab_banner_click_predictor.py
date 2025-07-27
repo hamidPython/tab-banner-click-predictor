@@ -17,6 +17,9 @@ base_ctrs = {
     'Health': 0.004
 }
 
+# Default CTR for unknown categories
+default_ctr = 0.005
+
 # Training data
 data = [
     {"base_ctr": 0.011, "brand_score": 4, "offer_score": 3, "clicks": 25960},
@@ -41,19 +44,22 @@ model = GradientBoostingRegressor()
 model.fit(X, y)
 
 # Streamlit UI
-st.title("📊 Irancell Tab Banner Click Predictor")
+st.title("📊 Irancell Top Banner Click Predictor")
 
-category = st.selectbox("Category", list(base_ctrs.keys()))
+category_options = list(base_ctrs.keys()) + ['Other']
+category = st.selectbox("Category", category_options)
 brand_score = st.slider("Brand Strength (0 to 5)", 0, 5, 3)
 offer_score = st.slider("Offer Strength (0 to 5)", 0, 5, 3)
 
+# Base CTR lookup with fallback
+base_ctr = base_ctrs.get(category, default_ctr)
+
 # Prediction
-base_ctr = base_ctrs[category]
 input_data = np.array([[base_ctr, brand_score, offer_score]])
 predicted_clicks = model.predict(input_data)[0]
 
 # Impressions estimation
-impressions = 5_000_000 * 0.5  # 50% view rate assumed
+impressions = 5_000_000 * 0.5
 ctr = predicted_clicks / impressions
 
 # Results
