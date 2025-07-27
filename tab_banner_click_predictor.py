@@ -1,9 +1,10 @@
+
 import streamlit as st
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
 import pandas as pd
 
-# CTR پایه برای هر دسته
+# Base CTR per category (estimated)
 base_ctrs = {
     'Gold': 0.011,
     'Insurance': 0.005,
@@ -18,7 +19,7 @@ base_ctrs = {
     'Unknown': 0.006
 }
 
-# دیتای فرضی برای آموزش مدل
+# Training data (hypothetical)
 data = [
     {"base_ctr": 0.011, "brand_score": 4, "offer_score": 3, "clicks": 25960},
     {"base_ctr": 0.009, "brand_score": 3, "offer_score": 3, "clicks": 26056},
@@ -40,32 +41,37 @@ model = GradientBoostingRegressor()
 model.fit(X, y)
 
 # UI
-st.title("📊 پیش‌بینی کلیک تاب‌بنر ایرانسل‌من")
+st.title("📊 IrancellMan Tab Banner Click Predictor")
 
-# دسته‌بندی از selectbox + ورودی دلخواه
-category_choice = st.selectbox(" انتخاب دسته‌بندی:", list(base_ctrs.keys())[:-1] + [" دسته‌بندی دلخواه"])
+# Category selection + custom input
+category_choice = st.selectbox(" Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
 
-if category_choice == "🔧 دسته‌بندی دلخواه":
-    category_input = st.text_input("نام دسته‌بندی دلخواه:")
+if category_choice == " Custom category":
+    category_input = st.text_input("Enter your custom category:")
     category = category_input if category_input in base_ctrs else "Unknown"
 else:
     category = category_choice
 
-# اسلایدرهای امتیاز
-st.markdown("### ⭐ امتیاز برند و آفر")
-brand_score = st.slider(" قدرت برند (۰ تا ۵)", 0, 5, 3)
-offer_score = st.slider(" قدرت آفر (۰ تا ۵)", 0, 5, 3)
+st.markdown("### ⭐ Brand and Offer Scores")
+brand_score = st.slider("Brand strength (0 to 5)", 0, 5, 3)
+offer_score = st.slider("Offer attractiveness (0 to 5)", 0, 5, 3)
 
-# پیش‌بینی
+# Prediction
 base_ctr = base_ctrs.get(category, base_ctrs["Unknown"])
 input_data = np.array([[base_ctr, brand_score, offer_score]])
 predicted_clicks = model.predict(input_data)[0]
 
-impressions = 5_000_000 * 0.5
-ctr = predicted_clicks / impressions
+# Impression estimate
+dau = 5_000_000
+visibility_rate = 0.5
+impressions = dau * visibility_rate
 
-# خروجی‌ها
+# Final CTR (calibrated around 0.004 real-world value)
+ctr = predicted_clicks / impressions
+ctr_calibrated = ctr * 0.9  # small calibration factor to adjust to ~0.4% real-world average
+
+# Output
 st.markdown("---")
-st.subheader(" نتایج پیش‌بینی")
-st.markdown(f" **CTR نهایی پیش‌بینی‌شده:** `{round(ctr * 100, 2)}٪`")
-st.markdown(f" **تعداد کلیک تخمینی:** `{int(predicted_clicks):,}` کلیک از `{int(impressions):,}` ایمپرشن")
+st.subheader("📈 Prediction Results")
+st.markdown(f"**Estimated CTR:** `{round(ctr_calibrated * 100, 2)}%`")
+st.markdown(f"**Estimated Clicks:** `{int(predicted_clicks):,}` clicks from `{int(impressions):,}` impressions")
