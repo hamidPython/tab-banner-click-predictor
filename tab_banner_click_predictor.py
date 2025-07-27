@@ -41,7 +41,7 @@ model = GradientBoostingRegressor()
 model.fit(X, y)
 
 # UI
-st.title("📊 IrancellMan Tab Banner Click Predictor")
+st.title("📊 IrancellMan TopBanner Click Predictor")
 
 # Category selection + custom input
 category_choice = st.selectbox(" Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
