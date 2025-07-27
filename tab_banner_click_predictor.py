@@ -29,7 +29,7 @@ adjustment_factors = {
 }
 
 # UI
-st.title("📊 پیش‌بینی کلیک روزانه تاب‌بنر ایرانسل‌من")
+st.title(" پیش‌بینی کلیک روزانه تاب‌بنر ایرانسل‌من")
 st.markdown("مدل واقع‌گرایانه بر اساس CTR واقعی بازار و ویژگی‌های برند")
 
 category = st.selectbox("دسته برند:", ["بدون دسته‌بندی (ناشناخته)"] + list(base_ctrs.keys()))
@@ -47,7 +47,7 @@ if category == "بدون دسته‌بندی (ناشناخته)":
     final_ctr = market_avg_ctr * (1 + 0.03 * brand_score + 0.05 * offer_score)
     predicted_clicks = round(impressions * final_ctr)
 
-    st.subheader("📈 مدل اصلاح‌شده (برند بدون دسته‌بندی):")
+    st.subheader(" مدل اصلاح‌شده (برند بدون دسته‌بندی):")
     st.write(f"- CTR پایه بازار: {round(market_avg_ctr * 100, 2)}٪")
     st.write(f"- CTR نهایی: {round(final_ctr * 100, 2)}٪")
     st.write(f"- ایمپرشن روزانه: {int(impressions):,}")
@@ -60,7 +60,7 @@ else:
     theoretical_clicks = impressions * final_ctr
     adjusted_clicks = round(theoretical_clicks * adjustment)
 
-    st.subheader("📈 مدل دسته‌بندی‌شده (واقع‌گرایانه):")
+    st.subheader(" مدل دسته‌بندی‌شده (واقع‌گرایانه):")
     st.write(f"- CTR پایه: {round(base_ctr * 100, 2)}٪")
     st.write(f"- CTR نهایی: {round(final_ctr * 100, 2)}٪")
     st.write(f"- ایمپرشن روزانه: {int(impressions):,}")
