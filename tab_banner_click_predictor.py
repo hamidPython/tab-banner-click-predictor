@@ -1,50 +1,35 @@
-
 import streamlit as st
 import numpy as np
-from sklearn.ensemble import GradientBoostingRegressor
 import pandas as pd
+import xgboost as xgb
 
-# Base CTR per category (estimated)
+# Base CTRs per category
 base_ctrs = {
     'Gold': 0.011,
     'Insurance': 0.005,
-    'Food': 0.01,
-    'Online/Shopping': 0.0011,
+    'Food': 0.009,
+    'Online/Shopping': 0.0099,
     'VOD': 0.009,
     'Crypto': 0.005,
     'Finance/Invest': 0.010,
     'LMS': 0.004,
     'Job': 0.004,
     'Health': 0.004,
+    'Car': 0.0095,
+    'Reservation': 0.007,
+    'Travel': 0.008,
     'Unknown': 0.006
 }
 
-# Training data (hypothetical)
-data = [
-    {"base_ctr": 0.011, "brand_score": 4, "offer_score": 3, "clicks": 25960},
-    {"base_ctr": 0.009, "brand_score": 3, "offer_score": 3, "clicks": 26056},
-    {"base_ctr": 0.011, "brand_score": 2, "offer_score": 2, "clicks": 3295},
-    {"base_ctr": 0.005, "brand_score": 3, "offer_score": 2, "clicks": 19000},
-    {"base_ctr": 0.0099, "brand_score": 3, "offer_score": 4, "clicks": 21000},
-    {"base_ctr": 0.005, "brand_score": 2, "offer_score": 2, "clicks": 6300},
-    {"base_ctr": 0.004, "brand_score": 1, "offer_score": 1, "clicks": 2900},
-    {"base_ctr": 0.004, "brand_score": 2, "offer_score": 2, "clicks": 3200},
-    {"base_ctr": 0.004, "brand_score": 2, "offer_score": 2, "clicks": 3100},
-    {"base_ctr": 0.010, "brand_score": 3, "offer_score": 3, "clicks": 25500}
-]
+# Load pre-trained XGBoost model
+model = xgb.XGBRegressor()
+model.load_model("xgb_model.json")  # make sure this file exists in same directory
 
-df = pd.DataFrame(data)
+st.set_page_config(page_title="Tab Banner Predictor", layout="centered")
+st.title("📊 IrancellMan Tab Banner Click Predictor (XGBoost Edition)")
 
-X = df[["base_ctr", "brand_score", "offer_score"]]
-y = df["clicks"]
-model = GradientBoostingRegressor()
-model.fit(X, y)
-
-# UI
-st.title("📊 IrancellMan TopBanner Click Predictor")
-
-# Category selection + custom input
-category_choice = st.selectbox(" Select brand category:", list(base_ctrs.keys())[:-1] + [" Custom category"])
+# Category input
+category_choice = st.selectbox("📂 Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
 
 if category_choice == " Custom category":
     category_input = st.text_input("Enter your custom category:")
@@ -52,6 +37,7 @@ if category_choice == " Custom category":
 else:
     category = category_choice
 
+# Brand & Offer score input
 st.markdown("### ⭐ Brand and Offer Scores")
 brand_score = st.slider("Brand strength (0 to 5)", 0, 5, 3)
 offer_score = st.slider("Offer attractiveness (0 to 5)", 0, 5, 3)
@@ -61,14 +47,12 @@ base_ctr = base_ctrs.get(category, base_ctrs["Unknown"])
 input_data = np.array([[base_ctr, brand_score, offer_score]])
 predicted_clicks = model.predict(input_data)[0]
 
-# Impression estimate
+# CTR Calculation
 dau = 5_000_000
 visibility_rate = 0.5
 impressions = dau * visibility_rate
-
-# Final CTR (calibrated around 0.004 real-world value)
 ctr = predicted_clicks / impressions
-ctr_calibrated = ctr * 0.9  # small calibration factor to adjust to ~0.4% real-world average
+ctr_calibrated = ctr * 0.9  # calibration factor to adjust output closer to 0.4%
 
 # Output
 st.markdown("---")
