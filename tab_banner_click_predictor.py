@@ -41,7 +41,7 @@ model = GradientBoostingRegressor()
 model.fit(X, y)
 
 # Streamlit UI
-st.title("📊 Tab Banner Click Predictor")
+st.title("📊 Irancell Tab Banner Click Predictor")
 
 category = st.selectbox("Category", list(base_ctrs.keys()))
 brand_score = st.slider("Brand Strength (0 to 5)", 0, 5, 3)
