@@ -1,12 +1,14 @@
-
 import streamlit as st
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor
+import pandas as pd
 
-# داده‌ها
+# CTR پایه برای هر دسته
 base_ctrs = {
     'Gold': 0.011,
-    'Insurance': 0.007,
-    'Food': 0.010,
-    'Online/Shopping': 0.012,
+    'Insurance': 0.005,
+    'Food': 0.009,
+    'Online/Shopping': 0.0099,
     'VOD': 0.009,
     'Crypto': 0.005,
     'Finance/Invest': 0.010,
@@ -15,54 +17,45 @@ base_ctrs = {
     'Health': 0.004
 }
 
-adjustment_factors = {
-    'Gold': 0.7,
-    'Insurance': 0.65,
-    'Food': 0.75,
-    'Online/Shopping': 0.85,
-    'VOD': 0.8,
-    'Crypto': 0.6,
-    'Finance/Invest': 0.75,
-    'LMS': 0.6,
-    'Job': 0.6,
-    'Health': 0.65
-}
+# دیتای فرضی برای آموزش مدل
+data = [
+    {"base_ctr": 0.011, "brand_score": 4, "offer_score": 3, "clicks": 25960},
+    {"base_ctr": 0.009, "brand_score": 3, "offer_score": 3, "clicks": 26056},
+    {"base_ctr": 0.011, "brand_score": 2, "offer_score": 2, "clicks": 3295},
+    {"base_ctr": 0.005, "brand_score": 3, "offer_score": 2, "clicks": 19000},
+    {"base_ctr": 0.0099, "brand_score": 3, "offer_score": 4, "clicks": 21000},
+    {"base_ctr": 0.005, "brand_score": 2, "offer_score": 2, "clicks": 6300},
+    {"base_ctr": 0.004, "brand_score": 1, "offer_score": 1, "clicks": 2900},
+    {"base_ctr": 0.004, "brand_score": 2, "offer_score": 2, "clicks": 3200},
+    {"base_ctr": 0.004, "brand_score": 2, "offer_score": 2, "clicks": 3100},
+    {"base_ctr": 0.010, "brand_score": 3, "offer_score": 3, "clicks": 25500}
+]
 
-# UI
-st.title(" پیش‌بینی کلیک روزانه تاب‌بنر ایرانسل‌من")
-st.markdown("مدل واقع‌گرایانه بر اساس CTR واقعی بازار و ویژگی‌های برند")
+df = pd.DataFrame(data)
 
-category = st.selectbox("دسته برند:", ["بدون دسته‌بندی (ناشناخته)"] + list(base_ctrs.keys()))
-brand_score = st.slider("قدرت برند (۰ تا ۵):", 0, 5, 3)
-offer_score = st.slider("جذابیت آفر (۰ تا ۵):", 0, 5, 3)
+# آموزش مدل با Gradient Boosting
+X = df[["base_ctr", "brand_score", "offer_score"]]
+y = df["clicks"]
+model = GradientBoostingRegressor()
+model.fit(X, y)
 
-# تنظیمات کلی
-view_rate = 0.5
-active_users = 5_000_000
-impressions = active_users * view_rate
+# رابط کاربری Streamlit
+st.title("📊 پیش‌بینی کلیک تاب‌بنر ایرانسل‌من")
 
-# محاسبات
-if category == "بدون دسته‌بندی (ناشناخته)":
-    market_avg_ctr = 0.004  # 0.4٪
-    final_ctr = market_avg_ctr * (1 + 0.03 * brand_score + 0.05 * offer_score)
-    predicted_clicks = round(impressions * final_ctr)
+category = st.selectbox("دسته‌بندی برند:", list(base_ctrs.keys()))
+brand_score = st.slider("قدرت برند (0 تا 5)", 0, 5, 3)
+offer_score = st.slider("قدرت آفر (0 تا 5)", 0, 5, 3)
 
-    st.subheader(" مدل اصلاح‌شده (برند بدون دسته‌بندی):")
-    st.write(f"- CTR پایه بازار: {round(market_avg_ctr * 100, 2)}٪")
-    st.write(f"- CTR نهایی: {round(final_ctr * 100, 2)}٪")
-    st.write(f"- ایمپرشن روزانه: {int(impressions):,}")
-    st.success(f"**کلیک تخمینی نهایی: {predicted_clicks:,} کلیک**")
+# پیش‌بینی
+base_ctr = base_ctrs[category]
+input_data = np.array([[base_ctr, brand_score, offer_score]])
+predicted_clicks = model.predict(input_data)[0]
 
-else:
-    base_ctr = base_ctrs[category]
-    adjustment = adjustment_factors[category]
-    final_ctr = base_ctr * (1 + 0.05 * brand_score + 0.05 * offer_score)
-    theoretical_clicks = impressions * final_ctr
-    adjusted_clicks = round(theoretical_clicks * adjustment)
+impressions = 5_000_000 * 0.5  # فرض: ۵ میلیون DAU × نرخ دیده شدن ۵۰٪
+ctr = predicted_clicks / impressions
 
-    st.subheader(" مدل دسته‌بندی‌شده (واقع‌گرایانه):")
-    st.write(f"- CTR پایه: {round(base_ctr * 100, 2)}٪")
-    st.write(f"- CTR نهایی: {round(final_ctr * 100, 2)}٪")
-    st.write(f"- ایمپرشن روزانه: {int(impressions):,}")
-    st.write(f"- کلیک تئوری: {int(theoretical_clicks):,}")
-    st.success(f"**کلیک واقع‌گرایانه: {adjusted_clicks:,} کلیک**")
+# نمایش نتایج
+st.markdown("---")
+st.subheader("🔎 نتایج پیش‌بینی:")
+st.write(f"**CTR نهایی پیش‌بینی‌شده:** {round(ctr * 100, 2)}٪")
+st.write(f"**تعداد کلیک تخمینی:** {int(predicted_clicks):,} کلیک از {int(impressions):,} ایمپرشن")
