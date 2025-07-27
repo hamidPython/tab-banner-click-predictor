@@ -1,9 +1,10 @@
+
 import streamlit as st
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
 import pandas as pd
 
-# CTR پایه برای هر دسته
+# CTR پایه برای هر دسته (با Unknown)
 base_ctrs = {
     'Gold': 0.011,
     'Insurance': 0.005,
@@ -14,10 +15,11 @@ base_ctrs = {
     'Finance/Invest': 0.010,
     'LMS': 0.004,
     'Job': 0.004,
-    'Health': 0.004
+    'Health': 0.004,
+    'Unknown': 0.006
 }
 
-# دیتای فرضی برای آموزش مدل
+# دیتای آموزشی برای مدل
 data = [
     {"base_ctr": 0.011, "brand_score": 4, "offer_score": 3, "clicks": 25960},
     {"base_ctr": 0.009, "brand_score": 3, "offer_score": 3, "clicks": 26056},
@@ -33,29 +35,30 @@ data = [
 
 df = pd.DataFrame(data)
 
-# آموزش مدل با Gradient Boosting
 X = df[["base_ctr", "brand_score", "offer_score"]]
 y = df["clicks"]
 model = GradientBoostingRegressor()
 model.fit(X, y)
 
-# رابط کاربری Streamlit
+# UI با فاصله‌های بهتر
 st.title("📊 پیش‌بینی کلیک تاب‌بنر ایرانسل‌من")
 
-category = st.selectbox("دسته‌بندی برند:", list(base_ctrs.keys()))
-brand_score = st.slider("قدرت برند (0 تا 5)", 0, 5, 3)
-offer_score = st.slider("قدرت آفر (0 تا 5)", 0, 5, 3)
+category_input = st.text_input("🗂 دسته‌بندی برند (مثلاً Gold، Insurance، یا هر چیز دیگر):", "Gold")
+category = category_input if category_input in base_ctrs else "Unknown"
 
-# پیش‌بینی
+st.markdown("### ⭐ امتیاز برند و آفر")
+brand_score = st.slider("🔹 قدرت برند (۰ تا ۵)", 0, 5, 3)
+offer_score = st.slider("🔸 قدرت آفر (۰ تا ۵)", 0, 5, 3)
+
 base_ctr = base_ctrs[category]
 input_data = np.array([[base_ctr, brand_score, offer_score]])
 predicted_clicks = model.predict(input_data)[0]
 
-impressions = 5_000_000 * 0.5  # فرض: ۵ میلیون DAU × نرخ دیده شدن ۵۰٪
+impressions = 5_000_000 * 0.5
 ctr = predicted_clicks / impressions
 
-# نمایش نتایج
 st.markdown("---")
-st.subheader("🔎 نتایج پیش‌بینی:")
-st.write(f"**CTR نهایی پیش‌بینی‌شده:** {round(ctr * 100, 2)}٪")
-st.write(f"**تعداد کلیک تخمینی:** {int(predicted_clicks):,} کلیک از {int(impressions):,} ایمپرشن")
+st.subheader("🔎 نتایج پیش‌بینی")
+st.markdown(f"📌 **CTR نهایی پیش‌بینی‌شده:** `{round(ctr * 100, 2)}٪`")
+st.markdown(f"📌 **تعداد کلیک تخمینی:** `{int(predicted_clicks):,}` کلیک از `{int(impressions):,}` ایمپرشن")
+
