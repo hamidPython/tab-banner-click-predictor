@@ -26,7 +26,7 @@ model = xgb.XGBRegressor()
 model.load_model("xgb_model.json")  # make sure this file exists in same directory
 
 st.set_page_config(page_title="Tab Banner Predictor", layout="centered")
-st.title("📊 IrancellMan Tab Banner Click Predictor (XGBoost Edition)")
+st.title("📊 IrancellMan Tab Banner Click Predictor ")
 
 # Category input
 category_choice = st.selectbox("📂 Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
