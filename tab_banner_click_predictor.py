@@ -44,7 +44,7 @@ model.fit(X, y)
 st.title("📊 IrancellMan TopBanner Click Predictor")
 
 # Category selection + custom input
-category_choice = st.selectbox(" Select brand category:", list(base_ctrs.keys())[:-1] + ["🔧 Custom category"])
+category_choice = st.selectbox(" Select brand category:", list(base_ctrs.keys())[:-1] + [" Custom category"])
 
 if category_choice == " Custom category":
     category_input = st.text_input("Enter your custom category:")
