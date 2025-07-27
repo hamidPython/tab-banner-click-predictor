@@ -29,7 +29,7 @@ data = [
     {"base_ctr": 0.0099, "brand_score": 3, "offer_score": 4, "clicks": 21000},
     {"base_ctr": 0.005, "brand_score": 2, "offer_score": 2, "clicks": 6300},
     {"base_ctr": 0.004, "brand_score": 1, "offer_score": 1, "clicks": 2900},
-    {"base_ctr": 0.004, "brand_score": 2, "offer_score": 2, "clicks": 3200},
+    {"base_ctr": 0.004, "brand_score": 2, "offer_score": 3, "clicks": 4000},
     {"base_ctr": 0.004, "brand_score": 2, "offer_score": 2, "clicks": 3100},
     {"base_ctr": 0.010, "brand_score": 3, "offer_score": 3, "clicks": 25500}
 ]
