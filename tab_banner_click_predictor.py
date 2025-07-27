@@ -56,6 +56,6 @@ ctr_calibrated = ctr * 0.9  # calibration factor to adjust output closer to 0.4%
 
 # Output
 st.markdown("---")
-st.subheader("📈 Prediction Results")
-st.markdown(f"**Estimated CTR:** {round(ctr * 100, 2)}%")
+st.subheader("📈 Prediction Results")\n
+st.markdown(f"**Estimated CTR:** {round(ctr * 100, 2)}%")\n
 st.markdown(f"**Estimated Clicks:** `{int(predicted_clicks):,}` clicks from `{int(impressions):,}` impressions")
