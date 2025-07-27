@@ -43,7 +43,7 @@ impressions = active_users * view_rate
 
 # محاسبات
 if category == "بدون دسته‌بندی (ناشناخته)":
-    market_avg_ctr = 0.0055  # 0.55٪
+    market_avg_ctr = 0.004  # 0.4٪
     final_ctr = market_avg_ctr * (1 + 0.03 * brand_score + 0.05 * offer_score)
     predicted_clicks = round(impressions * final_ctr)
 
