@@ -8,8 +8,8 @@ import pandas as pd
 base_ctrs = {
     'Gold': 0.011,
     'Insurance': 0.005,
-    'Food': 0.009,
-    'Online/Shopping': 0.0099,
+    'Food': 0.01,
+    'Online/Shopping': 0.0011,
     'VOD': 0.009,
     'Crypto': 0.005,
     'Finance/Invest': 0.010,
