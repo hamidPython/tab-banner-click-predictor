@@ -44,7 +44,7 @@ model = GradientBoostingRegressor()
 model.fit(X, y)
 
 # Streamlit UI
-st.title("📊 Irancell Top Banner Click Predictor")
+st.title(" Irancell Top Banner Click Predictor")
 
 category_options = list(base_ctrs.keys()) + ['Other']
 category = st.selectbox("Category", category_options)
@@ -64,6 +64,6 @@ ctr = predicted_clicks / impressions
 
 # Results
 st.markdown("---")
-st.subheader("🔎 Estimated Results")
+st.subheader(" Estimated Results")
 st.write(f"**Estimated CTR:** {round(ctr * 100, 2)}%")
 st.write(f"**Estimated Clicks:** {int(predicted_clicks):,} from {int(impressions):,} impressions")
